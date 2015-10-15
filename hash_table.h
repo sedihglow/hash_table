@@ -32,10 +32,14 @@ typedef struct Hashtable
 } hashtable_s;
 
 /* insert a new node into the hash table */
-int32_t insert();
+int32_t insert_table();
 
 /* remove a node from the hash table */
-int32_t remove();
+int32_t remove_table();
+
+/* retrieves the address of the node in question. */
+node_s retrieve_match();
+
 
 /* deallocate the entire hash table */
 int32_t dealloc_table();
