@@ -29,17 +29,18 @@ typedef struct Node
 typedef struct Hashtable
 {
     struct Node *hashTable[TBL_SIZE]; /* hash table */
-} hashtable_s;
+} hashTable_s;
 
 /* insert a new node into the hash table */
-int32_t insert_table();
+int32_t table_insert(hashTable_s *hTable, char *data);
 
 /* remove a node from the hash table */
-int32_t remove_table();
+int32_t table_remove();
 
-/* retrieves the address of the node in question. */
-node_s retrieve_match();
-
+/* retrieves the address of the node in question. 
+   returns: NULL if match was not found. node_s if match was found. 
+   errors: */
+node_s retrieve_match(char *toFind);
 
 /* deallocate the entire hash table */
 int32_t dealloc_table();

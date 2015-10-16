@@ -19,7 +19,6 @@ static inline void node_init(node_s *Restrict toInit)/*#{{{*/
     }
 
     toInit -> data = NULL;
-
 } /* end node_init #}}} */
 
 /* this can be easily altered when conforming to a different project.
@@ -53,11 +52,38 @@ static int32_t hashString(char *keyString)/*#{{{*/
     return stringTotal % _TBL_SIZE_;
 } /* end hashString #}}} */
 
+node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
+{
+    int32_t index = 0;
+    node_s *current = NULL;
+    
+    /* get index */
+    index = hashString(toFind);
+
+    /* set current to hTable index. the head ptr */
+    current = hashTable[index];
+    
+    /* if the index the node is at does exist, neither does the node */
+    if(current == NULL){
+        return NULL;}
+    
+    /* JAMES "TODO": just NOTE: checks if string data is there. change this 
+                     when altering for specific project */
+    while(current != NULL)
+    {
+        if(strcmp(current -> data, current -> toFind) == 0){
+            return current;}
+        current = current -> next;
+    }
+
+    return NULL;
+} /* end retrieve_match #}}} */
+
 /* insert a new node into the hash table, inserts at head of chain.
    returns: 1 on success, 0 if there was not enough room to malloc
    errors : EINVAL, data was NULL. exit() will be called in this implementation
             with and appropriate message */
-int32_t insert_table(hashtable_s *hTable, char *data)/*#{{{*/
+int32_t table_insert(hashTable_s *hTable, char *data)/*#{{{*/
 {
     node_s *temp = NULL;
     int32_t index = 0;
@@ -84,15 +110,40 @@ int32_t insert_table(hashtable_s *hTable, char *data)/*#{{{*/
 } /* end insert #}}} */
 
 /* remove a node from the hash table */
-int32_t remove_table()
+int32_t table_remove()
 {
     
     return 1;
 } /* end remove */
 
-/* deallocate the entire hash table */
-int32_t dealloc_table()
+/* deallocate the entire hash table from memory.
+   returns:
+   errors: */
+int32_t dealloc_table(hashTable_s *hTable)
 {
+    node_s *tmpHead = NULL; /* gets set to a pntr index in table */
+    node_s *nxtNode = NULL; /* gets set to the next node in a chain */
+    int32_t i = 0;
 
+    if(hTable != NULL)
+    {
+        /* remove each index's contents. Remove the chain of each pointer in the
+           array */
+        for(/*i=0*/; i < _TBL_SIZE_; ++i)
+        {
+            tmpHead = hTable[i];
+
+            /* free chain */
+            while(tmpHead != NULL)
+            {
+                nxtNode = tmpHead -> next;
+                if(nxtNode != NULL)
+                {
+                     
+
+
+
+        }
+    } /* end if */
     return 1;
 } /* end dealloc_table */
