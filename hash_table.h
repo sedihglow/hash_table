@@ -13,11 +13,18 @@
 /* change the size of the hash table to fit the project */
 #define _TBL_SIZE_    5
 
-/* sets all the pointers in the hash table to NULL */
-#define table_init(increment, hashTable)                            \
-{                                                                   \
-    for((increment) = 0; (increment) < _TBL_SIZE_; ++(increment)){  \
-        hashTable[i] = NULL;}                                       \
+/* sets all the pointers in the hash table to NULL. Allocats the table itself
+   if not allready done.*/
+#define table_init(increment, hashTable)                                    \
+{                                                                           \
+    if((hashTable) == NULL){                                                \
+        (hashTable) = (hashTable_s*) malloc(sizeof(hashTable_s);}           \
+                                                                            \
+    if((hashTable) -> table == NULL){                                       \
+        (hashTable) -> table = (node**) malloc(sizeof(node*)*_TBL_SIZE_);}  \
+                                                                            \
+    for((increment) = 0; (increment) < _TBL_SIZE_; ++(increment)){          \
+        hashTable[(increment)] = NULL;}                                     \
 } /* end table_init */
 
 typedef struct Node
@@ -28,14 +35,14 @@ typedef struct Node
 
 typedef struct Hashtable
 {
-    struct Node *hashTable[TBL_SIZE]; /* hash table */
+    struct Node **table; /* hash table */
 } hashTable_s;
 
 /* insert a new node into the hash table */
-int32_t table_insert(hashTable_s *hTable, char *data);
+int32_t table_insert(hashTable_s *hTable, char *toAdd);
 
 /* remove a node from the hash table */
-int32_t table_remove();
+int32_t hash_node_remove(hashTable_s *hTable, char *toRemove);
 
 /* retrieves the address of the node in question. 
    returns: NULL if match was not found. node_s if match was found. 

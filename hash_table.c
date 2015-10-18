@@ -9,6 +9,7 @@
 
 #include "hash_table.h"
 
+/* initialize a node */
 static inline void node_init(node_s *Restrict toInit)/*#{{{*/
 {
     if(toInit == NULL)
@@ -52,10 +53,16 @@ static int32_t hashString(char *keyString)/*#{{{*/
     return stringTotal % _TBL_SIZE_;
 } /* end hashString #}}} */
 
+/* Retrieves a matching node based on the given data toFind.
+   Returns: Pointer to matching node. NULL if node was not found.
+   Errors: calls errExit if no table was passed into function */
 node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
 {
-    int32_t index = 0;
+    int32_t index = 0; /* index result of hash */
     node_s *current = NULL;
+
+    if(hTable == NULL){
+        errExit("retrieve_match: Missing table");}
     
     /* get index */
     index = hashString(toFind);
@@ -83,7 +90,7 @@ node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
    returns: 1 on success, 0 if there was not enough room to malloc
    errors : EINVAL, data was NULL. exit() will be called in this implementation
             with and appropriate message */
-int32_t table_insert(hashTable_s *hTable, char *data)/*#{{{*/
+int32_t table_insert(hashTable_s *hTable, char *toAdd)/*#{{{*/
 {
     node_s *temp = NULL;
     int32_t index = 0;
@@ -98,10 +105,10 @@ int32_t table_insert(hashTable_s *hTable, char *data)/*#{{{*/
     init_node(temp);
     
     /* turn key value into an index */
-    index = hashString(data);
+    index = hashString(toAdd);
 
     /* adds a new node into the table */
-    copy_node(temp, data);
+    copy_node(temp, toAdd);
 
     temp -> next = hTable[index];
     hTable[index] = temp;
@@ -109,17 +116,57 @@ int32_t table_insert(hashTable_s *hTable, char *data)/*#{{{*/
     return 1;
 } /* end insert #}}} */
 
-/* remove a node from the hash table */
-int32_t table_remove()
+/* remove a node from the hash table.
+   Returns: 1 on succes, 0 if node was not found.
+   Errors: noerrExit if no table passed
+int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
 {
+    int32_t index = 0;  /* index result of hash */
+    node_s *current = NULL;
+    node_s *previous = NULL;
+
+    if(hTable == NULL){
+        noerrExit("hash_node_remove: Missing table");}
+
+    index = hashString(toRemove);
+
+    current = hTable[index];
+    if(current == NULL || toRemove == NULL){
+        return 0;} 
     
-    return 1;
-} /* end remove */
+    /* if the head pointer is the match, set the index to point to the next
+       node, free the node, return.
+       TODO: NOTE: will need to free the node differently depending on project
+                   implementation */
+    if(strcmp(current -> data, toRemove) == 0)
+    {
+        Table[index] = current -> next;
+        free(current -> data);
+        free(current);
+        return 1;
+    }
+    
+    /* go through the chain untill the match is found, then free */
+    while(current -> next != NULL)
+    {
+        previous = current;
+        if(strcmp(current -> data, toRemove) == 0)
+        {
+            previous -> next = current -> next;
+            free(current -> data);
+            free(current);
+            return 1;
+        } 
+        current = current -> next;
+    }
+    
+    return 0;
+} /* end remove #}}} */
 
 /* deallocate the entire hash table from memory.
    returns:
    errors: */
-int32_t dealloc_table(hashTable_s *hTable)
+int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
 {
     node_s *tmpHead = NULL; /* gets set to a pntr index in table */
     node_s *nxtNode = NULL; /* gets set to the next node in a chain */
@@ -134,16 +181,27 @@ int32_t dealloc_table(hashTable_s *hTable)
             tmpHead = hTable[i];
 
             /* free chain */
-            while(tmpHead != NULL)
+            while(tmgHead != NULL)
             {
                 nxtNode = tmpHead -> next;
                 if(nxtNode != NULL)
                 {
-                     
-
-
-
-        }
+                   tmpHead -> next = nxtNode -> next;
+                   /* TODO: NOTE: data will need to be freed differently 
+                                  depening on implementation */
+                   free(nxtNode -> data);
+                   free(nxtNode -> node);
+                }
+                else
+                {  
+                    assert(temp -> next == NULL);
+                    /* free the index of the node* data */
+                    free(tmpHead);
+                } /* end else */
+            } /* end while */
+        } /* end for */
     } /* end if */
+    /* now that everything is free, free the table itself */
+    free(hTable);
     return 1;
-} /* end dealloc_table */
+} /* end dealloc_table #}}} */
