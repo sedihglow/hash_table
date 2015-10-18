@@ -19,13 +19,12 @@
 #define table_init(increment, hashTable)                                    \
 {                                                                           \
     if((hashTable) == NULL){                                                \
-        (hashTable) = (hashTable_s*) malloc(sizeof(hashTable_s);}           \
-                                                                            \
-    if((hashTable) -> table == NULL){                                       \
-        (hashTable) -> table = (node**) malloc(sizeof(node*)*_TBL_SIZE_);}  \
+        (hashTable) = (hashTable_s*) malloc(sizeof(hashTable_s));}          \
                                                                             \
     for((increment) = 0; (increment) < _TBL_SIZE_; ++(increment)){          \
         hashTable[(increment)] = NULL;}                                     \
+                                                                            \
+    (increment) = 0;                                                        \
 } /* end table_init */
 
 typedef struct Node
@@ -51,10 +50,10 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove);
 node_s retrieve_match(char *toFind);
 
 /* deallocate the entire hash table */
-void dealloc_table();
+void dealloc_table(hashTable_s *hTable);
 
 /* display all the contents of the hash table */
 void hashtable_disp();
 
 /* display chain */
-void chain_disp();
+void chain_disp(node_s *chain);

@@ -18,7 +18,7 @@
 #include <inttypes.h>
 #include <getopt.h>
 #include <time.h>
-#include <ctypes.h>
+#include <ctype.h>
 
 
 #ifdef __SED_ERR__

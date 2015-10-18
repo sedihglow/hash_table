@@ -9,13 +9,14 @@
 
 #include "hash_table.h"
 
+
 /* initialize a node */
 static inline void node_init(node_s *Restrict toInit)/*#{{{*/
 {
     if(toInit == NULL)
     {
         toInit = (node_s*) malloc(sizeof(node_s));
-        if(toInit == 1){
+        if(toInit == NULL){
             errExit("insert_table: malloc failure");}
     }
 
@@ -28,10 +29,10 @@ static inline void copy_data(node_s *Restrict to, char *newData)/*#{{{*/
 {
     int32_t len = 0;
 
-    if(data == NULL){
-        errnumExit(EINVAL, "copy_node: data in from is NULL. cannot copy.");
+    if(newData == NULL){
+        errnumExit(EINVAL, "copy_node: data in from is NULL. cannot copy.");}
 
-    len = strlen(data) + 1;
+    len = strlen(newData) + 1;
 
     if(to -> data == NULL){
         to -> data = (char*) malloc(sizeof(char) * len);}
@@ -68,7 +69,7 @@ node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
     index = hashString(toFind);
 
     /* set current to hTable index. the head ptr */
-    current = hashTable[index];
+    current = hTable[index];
     
     /* if the index the node is at does exist, neither does the node */
     if(current == NULL){
@@ -118,7 +119,7 @@ int32_t table_insert(hashTable_s *hTable, char *toAdd)/*#{{{*/
 
 /* remove a node from the hash table.
    Returns: 1 on succes, 0 if node was not found.
-   Errors: noerrExit if no table passed
+   Errors: noerrExit if no table passed */
 int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
 {
     int32_t index = 0;  /* index result of hash */
@@ -202,7 +203,6 @@ int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
     /* now that everything is free, free the table itself */
     free(hTable);
 } /* end dealloc_table #}}} */
-
 
 /* display all the contents of the hash table */
 void hashtable_disp(hashtable_s *hTable)/*#{{{*/
