@@ -9,6 +9,7 @@
 
 #define __SED_ERR__
 #include "sedhead.h"
+#include <assert.h>
 
 /* change the size of the hash table to fit the project */
 #define _TBL_SIZE_    5
