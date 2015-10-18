@@ -87,8 +87,8 @@ node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
 } /* end retrieve_match #}}} */
 
 /* insert a new node into the hash table, inserts at head of chain.
-   returns: 1 on success, 0 if there was not enough room to malloc
-   errors : EINVAL, data was NULL. exit() will be called in this implementation
+   Returns: 1 on success, 0 if there was not enough room to malloc
+   Errors : EINVAL, data was NULL. exit() will be called in this implementation
             with and appropriate message */
 int32_t table_insert(hashTable_s *hTable, char *toAdd)/*#{{{*/
 {
@@ -163,9 +163,7 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
     return 0;
 } /* end remove #}}} */
 
-/* deallocate the entire hash table from memory.
-   returns:
-   errors: */
+/* deallocate the entire hash table from memory. */
 int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
 {
     node_s *tmpHead = NULL; /* gets set to a pntr index in table */
@@ -203,5 +201,34 @@ int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
     } /* end if */
     /* now that everything is free, free the table itself */
     free(hTable);
-    return 1;
 } /* end dealloc_table #}}} */
+
+
+/* display all the contents of the hash table */
+void hashtable_disp(hashtable_s *hTable)/*#{{{*/
+{
+    int32_t i = 0;
+
+    for(/*i=0*/; i < _TBL_SIZE_; ++i)
+    {
+        printf("\nIndex numner: %d",i);
+        fflush(stdout);
+        chain_disp(hTable[i]);
+    } 
+} /* end hashtable_disp #}}} */
+
+/* display chain */
+void chain_disp(node *chain)/*#{{{*/
+{
+    int32_t i = 0;
+
+    if(chain == NULL){
+        return;}
+
+    do
+    {
+        ++i;
+        printf("\nNode #%d\n%s", i, chain -> data);
+        chain = chain -> next;
+    }while(chain -> next != NULL);
+} /* end chain_disp #}}} */

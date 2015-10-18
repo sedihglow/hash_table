@@ -10,7 +10,6 @@ int32_t main(int32_t argc, char *argv[])
 {
     /* declare and initalize a hash table */
 
-
     /* insert a bunch of junk into the hash table. */
 
     /* print the hash table, check results */

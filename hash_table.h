@@ -51,5 +51,10 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove);
 node_s retrieve_match(char *toFind);
 
 /* deallocate the entire hash table */
-int32_t dealloc_table();
+void dealloc_table();
 
+/* display all the contents of the hash table */
+void hashtable_disp();
+
+/* display chain */
+void chain_disp();
