@@ -9,24 +9,16 @@
         Have the mixed declaration and declare it with random __'s.
 */
 
-#ifndef _SED_HEAD_
-#define _SED_HEAD_
 #include <sys/types.h>
-#include <stdio.h>                  
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <getopt.h>
-#include <time.h>
-#include <ctype.h>
-
 
 #ifdef __SED_ERR__
     #include "err_handle/err_handle.h"  /* error handling functions */
 #endif
+#undef __SED_ERR__
 #ifdef __SED_NUM__
     #include "get_num/get_num.h"        /* convert strings to int types */
 #endif
+#undef __SED_NUM__
 
 #ifdef __SED_LINUX__
     #include <sys/stat.h>
@@ -35,6 +27,16 @@
     #include <sys/time.h>
 #endif
 
+#ifndef _SED_HEAD_
+#define _SED_HEAD_
+#include <stdio.h>                  
+#include <stdlib.h>
+#include <string.h>
+#include <inttypes.h>
+#include <getopt.h>
+#include <time.h>
+#include <ctype.h>
+#include <assert.h>
 
 #ifndef __FL_CONSTS__
 #define __FL_CONSTS__

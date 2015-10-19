@@ -11,7 +11,7 @@
 
 
 /* initialize a node */
-static inline void node_init(node_s *Restrict toInit)/*#{{{*/
+static inline void init_node(node_s *Restrict toInit)/*#{{{*/
 {
     if(toInit == NULL)
     {
@@ -25,7 +25,7 @@ static inline void node_init(node_s *Restrict toInit)/*#{{{*/
 
 /* this can be easily altered when conforming to a different project.
    This copy's a nodes data (whever char* or struct *) into the node */
-static inline void copy_data(node_s *Restrict to, char *newData)/*#{{{*/
+static inline void copy_node(node_s *Restrict to, char *newData)/*#{{{*/
 {
     int32_t len = 0;
 
@@ -57,7 +57,7 @@ static int32_t hashString(char *keyString)/*#{{{*/
 /* Retrieves a matching node based on the given data toFind.
    Returns: Pointer to matching node. NULL if node was not found.
    Errors: calls errExit if no table was passed into function */
-node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
+node_s* retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
 {
     int32_t index = 0; /* index result of hash */
     node_s *current = NULL;
@@ -69,7 +69,7 @@ node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
     index = hashString(toFind);
 
     /* set current to hTable index. the head ptr */
-    current = hTable[index];
+    current = hTable -> table[index];
     
     /* if the index the node is at does exist, neither does the node */
     if(current == NULL){
@@ -79,7 +79,7 @@ node_s retrieve_match(hashTable_s *hTable, char *toFind)/*#{{{*/
                      when altering for specific project */
     while(current != NULL)
     {
-        if(strcmp(current -> data, current -> toFind) == 0){
+        if(strcmp(current -> data, toFind) == 0){
             return current;}
         current = current -> next;
     }
@@ -99,7 +99,7 @@ int32_t table_insert(hashTable_s *hTable, char *toAdd)/*#{{{*/
     temp = (node_s*) malloc(sizeof(node_s));
     if(temp == NULL)
     {
-        errmsg("insert_table: malloc failure (-_-;)"); 
+        errMsg("insert_table: malloc failure (-_-;)"); 
         return 0;
     } 
 
@@ -111,8 +111,8 @@ int32_t table_insert(hashTable_s *hTable, char *toAdd)/*#{{{*/
     /* adds a new node into the table */
     copy_node(temp, toAdd);
 
-    temp -> next = hTable[index];
-    hTable[index] = temp;
+    temp -> next = hTable -> table[index];
+    hTable -> table[index] = temp;
     
     return 1;
 } /* end insert #}}} */
@@ -131,7 +131,7 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
 
     index = hashString(toRemove);
 
-    current = hTable[index];
+    current = hTable -> table[index];
     if(current == NULL || toRemove == NULL){
         return 0;} 
     
@@ -141,7 +141,7 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
                    implementation */
     if(strcmp(current -> data, toRemove) == 0)
     {
-        Table[index] = current -> next;
+        hTable -> table[index] = current -> next;
         free(current -> data);
         free(current);
         return 1;
@@ -165,7 +165,7 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove)/*#{{{*/
 } /* end remove #}}} */
 
 /* deallocate the entire hash table from memory. */
-int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
+void dealloc_table(hashTable_s *hTable) /*#{{{*/
 {
     node_s *tmpHead = NULL; /* gets set to a pntr index in table */
     node_s *nxtNode = NULL; /* gets set to the next node in a chain */
@@ -177,10 +177,10 @@ int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
            array */
         for(/*i=0*/; i < _TBL_SIZE_; ++i)
         {
-            tmpHead = hTable[i];
+            tmpHead = hTable -> table[i];
 
             /* free chain */
-            while(tmgHead != NULL)
+            while(tmpHead != NULL)
             {
                 nxtNode = tmpHead -> next;
                 if(nxtNode != NULL)
@@ -189,11 +189,11 @@ int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
                    /* TODO: NOTE: data will need to be freed differently 
                                   depening on implementation */
                    free(nxtNode -> data);
-                   free(nxtNode -> node);
+                   free(nxtNode -> next);
                 }
                 else
                 {  
-                    assert(temp -> next == NULL);
+                    assert(tmpHead -> next == NULL);
                     /* free the index of the node* data */
                     free(tmpHead);
                 } /* end else */
@@ -205,7 +205,7 @@ int32_t dealloc_table(hashTable_s *hTable) /*#{{{*/
 } /* end dealloc_table #}}} */
 
 /* display all the contents of the hash table */
-void hashtable_disp(hashtable_s *hTable)/*#{{{*/
+void hashtable_disp(hashTable_s *hTable)/*#{{{*/
 {
     int32_t i = 0;
 
@@ -213,12 +213,12 @@ void hashtable_disp(hashtable_s *hTable)/*#{{{*/
     {
         printf("\nIndex numner: %d",i);
         fflush(stdout);
-        chain_disp(hTable[i]);
+        chain_disp(hTable -> table[i]);
     } 
 } /* end hashtable_disp #}}} */
 
 /* display chain */
-void chain_disp(node *chain)/*#{{{*/
+void chain_disp(node_s *chain)/*#{{{*/
 {
     int32_t i = 0;
 

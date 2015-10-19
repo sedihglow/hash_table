@@ -9,7 +9,6 @@
 
 #define __SED_ERR__
 #include "sedhead.h"
-#include <assert.h>
 
 /* change the size of the hash table to fit the project */
 #define _TBL_SIZE_    5
@@ -22,7 +21,7 @@
         (hashTable) = (hashTable_s*) malloc(sizeof(hashTable_s));}          \
                                                                             \
     for((increment) = 0; (increment) < _TBL_SIZE_; ++(increment)){          \
-        hashTable[(increment)] = NULL;}                                     \
+        hashTable -> table[(increment)] = NULL;}                            \
                                                                             \
     (increment) = 0;                                                        \
 } /* end table_init */
@@ -47,7 +46,7 @@ int32_t hash_node_remove(hashTable_s *hTable, char *toRemove);
 /* retrieves the address of the node in question. 
    returns: NULL if match was not found. node_s if match was found. 
    errors: */
-node_s retrieve_match(char *toFind);
+node_s* retrieve_match(hashTable_s *hTable, char *toFind);
 
 /* deallocate the entire hash table */
 void dealloc_table(hashTable_s *hTable);
