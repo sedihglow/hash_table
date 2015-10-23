@@ -49,7 +49,7 @@ typedef struct Hashtable
 int32_t table_insert(hashTable_s *Restrict hTable, char *Restrict toAdd);
 
 /* remove a node from the hash table */
-int32_t hash_node_remove(hashTable_s *Restrict hTable, char *Restrict toRemove);
+int32_t hashNode_remove(hashTable_s *Restrict hTable, char *Restrict toRemove);
 
 /* retrieves the address of the node in question. 
    returns: NULL if match was not found. node_s if match was found. 

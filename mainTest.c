@@ -30,13 +30,26 @@ int main(int argc, char *argv[])
     {
         gen_string(name, NBUFF);
         table_insert(testTable, name);
-        free(name);
-        name = NULL;
     }
+
+    free(name);
+    name = NULL;
 
     /* display the jazz after the insertion. */
     hashtable_disp(testTable);  
-    
+
+    /* insert some names */
+    for(i = 0; i < removals; ++i)
+    {
+        gen_string(name, NBUFF);
+        hashNode_remove(testTable, name);
+    }
+
+    free(name);
+
+    /* display the jazz after the insertion. */
+    hashtable_disp(testTable);  
+
     /* deallocate table */
     dealloc_table(testTable);
     return 0;

@@ -85,7 +85,7 @@ node_s* retrieve_match(hashTable_s *Restrict hTable, char *Restrict toFind)/*#{{
     if(current == NULL){
         return NULL;}
     
-    /* JAMES "TODO": just NOTE: checks if string data is there. change this 
+    /* NOTE: checks if string data is there. change this 
                      when altering for specific project */
     while(current != NULL)
     {
@@ -126,14 +126,33 @@ int32_t table_insert(hashTable_s *Restrict hTable, char *Restrict toAdd)/*#{{{*/
     return 1;
 } /* end insert #}}} */
 
+/* recursivly removes a node from the table based on toRemove from a given
+   chain.
+   Returns: 1 on successfull removal, 0 if nothing was removed.
+   Errors : */
+static int32_t dealloc_node(node_s *chain, node_s *prev, char *Restrict toRemove)
+{
+    if(chain == NULL){
+        return 0;}
+
+    if(strcmp(chain -> data, toRemove) == 0)
+    {
+        prev -> next = chain -> next;
+        free(chain -> data);
+        free(chain);
+        return 1;
+    }
+    
+    return dealloc_node(chain -> next, chain, toRemove);
+}
+
 /* remove a node from the hash table.
    Returns: 1 on succes, 0 if node was not found.
    Errors: noerrExit if no table passed */
-int32_t hash_node_remove(hashTable_s *Restrict hTable, char *Restrict toRemove)/*#{{{*/
+int32_t hashNode_remove(hashTable_s *Restrict hTable, char *Restrict toRemove)/*#{{{*/
 {
+    node_s *temp = NULL;
     int32_t index = 0;  /* index result of hash */
-    node_s *current = NULL;
-    node_s *previous = NULL;
 
     if(hTable == NULL){
         noerrExit("hash_node_remove: Missing table");}
@@ -143,37 +162,20 @@ int32_t hash_node_remove(hashTable_s *Restrict hTable, char *Restrict toRemove)/
 
     index = hashString(toRemove);
 
-    current = hTable -> table[index];
-    if(current == NULL){
-        return 0;} 
+    temp = hTable -> table[index];
+
+    if(temp == NULL){
+        return 0;}
     
-    /* if the head pointer is the match, set the index to point to the next
-       node, free the node, return.
-       NOTE: will need to free the node differently depending on project
-                   implementation */
-    if(strcmp(current -> data, toRemove) == 0)
+    if(strcmp(temp -> data, toRemove) == 0)
     {
-        hTable -> table[index] = current -> next;
-        free(current -> data);
-        free(current);
+        hTable -> table[index] = temp -> next;
+        free(temp -> data);
+        free(temp);
         return 1;
-    }
-    
-    /* go through the chain untill the match is found, then free */
-    while(current -> next != NULL)
-    {
-        previous = current;
-        if(strcmp(current -> data, toRemove) == 0)
-        {
-            previous -> next = current -> next;
-            free(current -> data);
-            free(current);
-            return 1;
-        } 
-        current = current -> next;
-    }
-    
-    return 0;
+    } 
+
+    return dealloc_node(temp -> next, temp, toRemove);
 } /* end remove #}}} */
 
 /* deallocate the entire hash table from memory. */
@@ -233,6 +235,7 @@ void hashtable_disp(hashTable_s *Restrict hTable)/*#{{{*/
         printf("\nIndex number: %d",i);
         fflush(stdout);
         chain_disp(hTable -> table[i]);
+        printf("\n");
     } 
 } /* end hashtable_disp #}}} */
 
@@ -247,7 +250,7 @@ void chain_disp(node_s *Restrict chain)/*#{{{*/
     while(chain != NULL)
     {
         ++i;
-        printf("\nNode #%d\n%s", i, chain -> data);
+        printf("\nNode #%d\n%s\n", i, chain -> data);
         chain = chain -> next;
     }
 } /* end chain_disp #}}} */
