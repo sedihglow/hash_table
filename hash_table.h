@@ -7,23 +7,28 @@
     filename: hash_table.h
 */
 
-#define __SED_ERR__
+#define __SED_ERR__    /* error functions */
 #include "sedhead.h"
 
 /* change the size of the hash table to fit the project */
 #define _TBL_SIZE_    5
 
-/* sets all the pointers in the hash table to NULL. Allocats the table itself
-   if not allready done.*/
-#define table_init(increment, hashTable)                                    \
+/* sets all the pointers in a hash table to NULL. */
+#define null_table(hashPntr)                                                \
 {                                                                           \
-    if((hashTable) == NULL){                                                \
-        (hashTable) = (hashTable_s*) malloc(sizeof(hashTable_s));}          \
+    int32_t ___Z_;                                                          \
+    for((___Z_) = 0; (___Z_) < _TBL_SIZE_; ++(___Z_)){                      \
+        (hashPntr) -> table[(___Z_)] = NULL;}                               \
+} /* end null_table */
+
+/* Allocats the table itself if not allready done, then calls null_table to
+   set all the pointers in the table to NULL */
+#define table_init(hashPntr)                                                \
+{                                                                           \
+    if((hashPntr) == NULL){                                                 \
+        (hashPntr) = (hashTable_s*) malloc(sizeof(hashTable_s));}           \
                                                                             \
-    for((increment) = 0; (increment) < _TBL_SIZE_; ++(increment)){          \
-        hashTable -> table[(increment)] = NULL;}                            \
-                                                                            \
-    (increment) = 0;                                                        \
+    null_table((hashPntr));                                                 \
 } /* end table_init */
 
 typedef struct Node
