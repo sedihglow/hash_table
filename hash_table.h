@@ -10,26 +10,9 @@
 #define __SED_ERR__    /* error functions */
 #include "sedhead.h"
 
+
 /* change the size of the hash table to fit the project */
 #define _TBL_SIZE_    5
-
-/* sets all the pointers in a hash table to NULL. */
-#define null_table(hashPntr)                                                \
-{                                                                           \
-    int32_t ___Z_;                                                          \
-    for((___Z_) = 0; (___Z_) < _TBL_SIZE_; ++(___Z_)){                      \
-        (hashPntr) -> table[(___Z_)] = NULL;}                               \
-} /* end null_table */
-
-/* Allocats the table itself if not allready done, then calls null_table to
-   set all the pointers in the table to NULL */
-#define table_init(hashPntr)                                                \
-{                                                                           \
-    if((hashPntr) == NULL){                                                 \
-        (hashPntr) = (hashTable_s*) malloc(sizeof(hashTable_s));}           \
-                                                                            \
-    null_table((hashPntr));                                                 \
-} /* end table_init */
 
 typedef struct Node
 {
@@ -41,6 +24,27 @@ typedef struct Hashtable
 {
     struct Node **table; /* hash table */
 } hashTable_s;
+
+/* sets all the pointers in a hash table to NULL. */
+#define null_table(hashPntr)                                                \
+{                                                                           \
+    int32_t ___Z_;                                                          \
+    for((___Z_) = 0; (___Z_) < _TBL_SIZE_; ++(___Z_)){                      \
+        (hashPntr) -> table[(___Z_)] = NULL;}                               \
+} /* end null_table */
+
+/* Allocats the table itself if not allready done, then calls null_table to
+   set all the pointers in the table to NULL */
+#define table_init(hashPntr)                                                   \
+{                                                                              \
+    if((hashPntr) == NULL){                                                    \
+        (hashPntr) = (hashTable_s*) malloc(sizeof(hashTable_s));}              \
+                                                                               \
+    if((hashPntr) -> table == NULL){                                           \
+        (hashPntr) -> table = (node_s**) malloc(sizeof(node_s*) * _TBL_SIZE_);}\
+                                                                               \
+    null_table((hashPntr));                                                    \
+} /* end table_init */
 
 /* insert a new node into the hash table */
 int32_t table_insert(hashTable_s *hTable, char *toAdd);

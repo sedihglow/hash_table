@@ -121,7 +121,7 @@ typedef enum {false, true} Bool;
 /* create a bit mask for a given range of bits. start, end. (lsb,msb) */
 #define create_mask(start, end, resMask)                                    \
 {                                                                           \
-    int32_t ___S_                                                           \
+    int32_t ___S_;                                                          \
     if((start) > (end)){                                                    \
         errmsg("create_mask: start > end, no mask was generated.");}        \
                                                                             \
@@ -131,12 +131,43 @@ typedef enum {false, true} Bool;
 } /* end create_mask */
 
 /* adds all the ascii values in a character array together */
-#define sumChars(array, size, res)                            \
+#define sumArr(array, size, res)                              \
 {                                                             \
-    int32_t ___NC_                                            \
-    for((___NC_) = 0; (___NC_) < (size), ++(___NC_)){         \
+    int32_t ___NC_;                                           \
+    (res) = 0;                                                \
+    for((___NC_) = 0; (___NC_) < (size); ++(___NC_)){         \
         (res) += (array[(___NC_)]);}                          \
 } /* end sumChars */
+
+/* generated a random string, excluding 0x1 - 0x1f and 0x7f, places it in 
+   (string). mod value implicitly ignores 0x7f. */
+#define gen_string(string, size)                                        \
+{                                                                       \
+    int32_t __K_U_ = 0;                                                 \
+    int32_t _SUM__ = 0;                                                 \
+    char _N_CH_ = NULL; /* pointer to use with string */                \
+                                                                        \
+    if((string) == NULL)                                                \
+    {                                                                   \
+        (string) = (char*) malloc(sizeof(char)*(size));                 \
+        memset((string), '\0', (size));                                 \
+    }                                                                   \
+                                                                        \
+    /* seed random using sumArr */                                      \
+    sumArr((string), (size), _SUM__);                                   \
+    srandom(_SUM__);                                                    \
+                                                                        \
+    (string)[size-1] = '\0'; /* make sure there is a null at the end */ \
+    for((__K_U_) = 0; (__K_U_) < (size)-1; ++i)                         \
+    {                                                                   \
+        _N_CH_ = (string)[(__K_U_)];                                    \
+        do                                                              \
+        {                                                               \
+            _N_CH_ = random() % 0x7f;                                   \
+        }while(_N_CH_ < 0x20 && _N_CH_ != 0);                           \
+        (string)[(__K_U_)] = _N_CH_;                                    \
+    }                                                                   \
+} /* end gen_string */
 
 /* vectorizes a function funct, its C99 as fuck tho.
    -Type is the type of pointer used. (VA_ARGS could be void for example.). 
