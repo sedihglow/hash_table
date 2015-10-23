@@ -47,21 +47,21 @@ typedef struct Hashtable
 } /* end table_init */
 
 /* insert a new node into the hash table */
-int32_t table_insert(hashTable_s *hTable, char *toAdd);
+int32_t table_insert(hashTable_s *Restrict hTable, char *Restrict toAdd);
 
 /* remove a node from the hash table */
-int32_t hash_node_remove(hashTable_s *hTable, char *toRemove);
+int32_t hash_node_remove(hashTable_s *Restrict hTable, char *Restrict toRemove);
 
 /* retrieves the address of the node in question. 
    returns: NULL if match was not found. node_s if match was found. 
    errors: */
-node_s* retrieve_match(hashTable_s *hTable, char *toFind);
+node_s* retrieve_match(hashTable_s *Restrict hTable, char *Restrict toFind);
 
 /* deallocate the entire hash table */
-void dealloc_table(hashTable_s *hTable);
+void dealloc_table(hashTable_s *Restrict hTable);
 
 /* display all the contents of the hash table */
-void hashtable_disp();
+void hashtable_disp(hashTable_s *Restrict hTable);
 
 /* display chain */
-void chain_disp(node_s *chain);
+void chain_disp(node_s *Restrict chain);

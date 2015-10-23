@@ -2,6 +2,21 @@
     stuff i use for stuff.
 */
 
+#ifdef __SED_ERR__
+    #include "err_handle/err_handle.h"  /* error handling functions */
+#endif
+#ifdef __SED_NUM__
+    #include "get_num/get_num.h"        /* convert strings to int types */
+#endif
+
+#ifdef __SED_LINUX__
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <sys/time.h>
+#endif
+
 #ifndef _SED_HEAD_
 #define _SED_HEAD_
 #include <sys/types.h>
@@ -12,21 +27,6 @@
 #include <getopt.h>
 #include <time.h>
 #include <ctype.h>
-
-
-#ifdef __SED_ERR__
-    #include "err_handle/err_handle.h"  /* error handling functions */
-#endif
-#ifdef __SED_NUM__
-    #include "get_num/get_num.h"        /* convert strings to int types */
-#endif
-
-#ifdef __SED_LINUX__
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #include <fcntl.h>
-    #include <sys/time.h>
-#endif
 
 
 #ifndef __FL_CONSTS__
@@ -140,31 +140,33 @@ typedef enum {false, true} Bool;
 } /* end sumChars */
 
 /* generated a random string, excluding 0x1 - 0x1f and 0x7f, places it in 
-   (string). mod value implicitly ignores 0x7f. */
+   (string). mod value implicitly ignores 0x7f. 
+   NOTE: If string is NULL, data will be allocated, set to zero, and 
+         random gets seeded with 0.
+         
+         The seed for gen_string is the string. */
 #define gen_string(string, size)                                        \
 {                                                                       \
     int32_t __K_U_ = 0;                                                 \
     int32_t _SUM__ = 0;                                                 \
-    char _N_CH_ = NULL; /* pointer to use with string */                \
+    char _N_CH_ = '\0';                                                 \
                                                                         \
     if((string) == NULL)                                                \
     {                                                                   \
         (string) = (char*) malloc(sizeof(char)*(size));                 \
         memset((string), '\0', (size));                                 \
     }                                                                   \
-                                                                        \
-    /* seed random using sumArr */                                      \
     sumArr((string), (size), _SUM__);                                   \
+    /* seed random using sumArr */                                      \
     srandom(_SUM__);                                                    \
                                                                         \
-    (string)[size-1] = '\0'; /* make sure there is a null at the end */ \
-    for((__K_U_) = 0; (__K_U_) < (size)-1; ++i)                         \
+    (string)[(size)-1] = '\0'; /* make sure there is a null */          \
+    for((__K_U_) = (size)-2; (__K_U_) > -1; --__K_U_)                   \
     {                                                                   \
-        _N_CH_ = (string)[(__K_U_)];                                    \
         do                                                              \
         {                                                               \
             _N_CH_ = random() % 0x7f;                                   \
-        }while(_N_CH_ < 0x20 && _N_CH_ != 0);                           \
+        }while(_N_CH_ < 0x20 && _N_CH_ > 0x0);                          \
         (string)[(__K_U_)] = _N_CH_;                                    \
     }                                                                   \
 } /* end gen_string */
