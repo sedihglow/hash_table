@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
     {
         gen_string(name, NBUFF);
         table_insert(testTable, name);
+        free(name);
+        name = NULL;
     }
 
     /* display the jazz after the insertion. */

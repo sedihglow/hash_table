@@ -12,17 +12,17 @@
 #include <assert.h>
 
 /* initialize a node */
-static inline void init_node(node_s *Restrict toInit)/*#{{{*/
+static inline void init_node(node_s **Restrict toInit)/*#{{{*/
 {
-    if(toInit == NULL)
+    if(*toInit == NULL)
     {
-        toInit = (node_s*) malloc(sizeof(node_s));
-        if(toInit == NULL){
+        *toInit = (node_s*) malloc(sizeof(node_s));
+        if(*toInit == NULL){
             errExit("insert_table: malloc failure");}
     }
 
-    toInit -> data = NULL;
-    toInit -> next = NULL;
+    (*toInit) -> data = NULL;
+    (*toInit) -> next = NULL;
 } /* end node_init #}}} */
 
 /* this can be easily altered when conforming to a different project.
@@ -112,11 +112,7 @@ int32_t table_insert(hashTable_s *Restrict hTable, char *Restrict toAdd)/*#{{{*/
         return 0;
     }
 
-    temp = (node_s*) malloc(sizeof(node_s));
-    if(temp == NULL){
-        return -1;} 
-
-    init_node(temp);
+    init_node(&temp);
     
     /* turn key value into an index */
     index = hashString(toAdd);
@@ -206,6 +202,7 @@ void dealloc_table(hashTable_s *Restrict hTable) /*#{{{*/
                                   depening on implementation */
                    free(nxtNode -> data);
                    free(nxtNode);
+                   nxtNode = NULL;
                 }
                 else
                 {  
@@ -218,6 +215,7 @@ void dealloc_table(hashTable_s *Restrict hTable) /*#{{{*/
         } /* end for */
     } /* end if */
     /* now that everything is free, free the table itself */
+    free(hTable -> table);
     free(hTable);
     hTable = NULL;
 } /* end dealloc_table #}}} */
@@ -246,7 +244,7 @@ void chain_disp(node_s *Restrict chain)/*#{{{*/
     if(chain == NULL){
         return;}
 
-    while(chain -> next != NULL)
+    while(chain != NULL)
     {
         ++i;
         printf("\nNode #%d\n%s", i, chain -> data);
