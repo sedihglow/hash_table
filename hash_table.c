@@ -8,7 +8,8 @@
 */
 
 #include "hash_table.h"
-
+/*#define NDEBUG*/
+#include <assert.h>
 
 /* initialize a node */
 static inline void init_node(node_s *Restrict toInit)/*#{{{*/
