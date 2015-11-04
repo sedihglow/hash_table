@@ -35,14 +35,18 @@ typedef struct Hashtable
 
 /* Allocats the table itself if not allready done, then calls null_table to
    set all the pointers in the table to NULL */
-#define table_init(hashPntr)                                                  \
-{                                                                             \
-    if((hashPntr) == NULL)                                                    \
-    {                                                                         \
-        (hashPntr) = (hashTable_s*) malloc(sizeof(hashTable_s));              \
-        (hashPntr) -> table = (node_s**) malloc(sizeof(node_s*) * _TBL_SIZE_);\
-    }                                                                         \
-    null_table((hashPntr));                                                   \
+#define table_init(hashPntr)                                                   \
+{                                                                              \
+    if((hashPntr) == NULL)                                                     \
+    {                                                                          \
+        (hashPntr) = (hashTable_s*) malloc(sizeof(hashTable_s));               \
+        (hashPntr) -> table = NULL;                                            \
+    }                                                                          \
+                                                                               \
+    if((hashPntr) -> table == NULL){                                           \
+        (hashPntr) -> table = (node_s**) malloc(sizeof(node_s*) * _TBL_SIZE_);}\
+                                                                               \
+    null_table((hashPntr));                                                    \
 } /* end table_init */
 
 /* insert a new node into the hash table */

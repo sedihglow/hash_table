@@ -130,7 +130,7 @@ int32_t table_insert(hashTable_s *Restrict hTable, char *Restrict toAdd)/*#{{{*/
    chain.
    Returns: 1 on successfull removal, 0 if nothing was removed.
    Errors : */
-static int32_t dealloc_node(node_s *chain, node_s *prev, char *Restrict toRemove)
+static int32_t dealloc_node(node_s *chain, node_s *prev, char *Restrict toRemove)/*#{{{*/
 {
     if(chain == NULL){
         return 0;}
@@ -144,7 +144,7 @@ static int32_t dealloc_node(node_s *chain, node_s *prev, char *Restrict toRemove
     }
     
     return dealloc_node(chain -> next, chain, toRemove);
-}
+} /* end dealloc_node #}}}*/
 
 /* remove a node from the hash table.
    Returns: 1 on succes, 0 if node was not found.
